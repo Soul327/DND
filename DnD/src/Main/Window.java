@@ -32,6 +32,8 @@ public class Window extends Thread implements ActionListener{
 	public ArrayList<String> debugMessages = new ArrayList<String>();
 	
 	public JFrame frame;
+	public JMenuBar mb;
+	public JMenu fileMenu, serverMenu;
 	private Canvas canvas;
 	public KeyManager keyManager;
 	public MouseManager mouseManager;
@@ -65,16 +67,22 @@ public class Window extends Thread implements ActionListener{
 		frame.addMouseMotionListener(mouseManager);
 		frame.addMouseWheelListener(mouseManager);
 		
-		JMenu menu;
-		JMenuBar mb = new JMenuBar();
-		menu = new JMenu("File");
+		mb = new JMenuBar();
+		fileMenu = new JMenu("File");
 		
 		int z=0;
-		z=0; menuItems[z] = new JMenuItem("New"); menu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		z=1; menuItems[z] = new JMenuItem("Open"); menu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		z=2; menuItems[z] = new JMenuItem("Save"); menu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		z=3; menuItems[z] = new JMenuItem("Exit"); menu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		mb.add(menu);
+		z=0; menuItems[z] = new JMenuItem("New"); fileMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
+		z=1; menuItems[z] = new JMenuItem("Open"); fileMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
+		z=2; menuItems[z] = new JMenuItem("Save"); fileMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
+		z=3; menuItems[z] = new JMenuItem("Exit"); fileMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
+		mb.add(fileMenu);
+		
+		JMenuItem[] menuItems = new JMenuItem[10];
+		serverMenu = new JMenu("Server");
+		
+		z=4; menuItems[z] = new JMenuItem("Shutdown"); serverMenu.add(menuItems[z]);
+		serverMenu.setVisible(false);
+		
 		frame.setJMenuBar(mb);
 		
 		canvas = new Canvas();
