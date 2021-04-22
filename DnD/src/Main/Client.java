@@ -39,43 +39,45 @@ public class Client extends Thread {
 	}
 	public void run() {
 		try {
-			connect();
-			while(socket.isConnected()) {
-//				while(!cycle);
-//				ServerMisc.sendString(out, "PING");
-				System.out.println("CLIENT WAITING");
-				String line = ServerMisc.getString(in);
-				System.out.println( "CLIENT RECEIVED:"+line );
-				if(line.startsWith("LOGIN ACCEPTED")) {
-					Main.window.stateManager.state = 1;
-					String per = line.substring(15);
-					if(per.charAt(1) == '1') {
-						
-						Main.window.serverMenu.setVisible(true);
-						Main.window.frame.pack();
-						System.out.println("ADDED BAR");
+			do {
+				connect();
+//				ServerMisc.getString(in);
+				while(socket.isConnected()) {
+					System.out.println("CLIENT WAITING");
+					String line = ServerMisc.getString(in);
+					System.out.println( "CLIENT RECEIVED:"+line );
+					if(line.startsWith("SENDING FILE")) {
+						ServerMisc.sendString(out, "PING");
+						ServerMisc.getFile(in);
 					}
+					if(line.startsWith("LOGIN ACCEPTED")) {
+						Main.window.stateManager.state = 1;
+						String per = line.substring(15);
+						if(per.charAt(1) == '1') {
+							Main.window.masterMenu.setVisible(true);
+							Main.window.frame.validate();
+							Main.window.frame.repaint();
+						}
+						if(per.charAt(1) == '1') {
+							Main.window.serverMenu.setVisible(true);
+							Main.window.frame.validate();
+							Main.window.frame.repaint();
+						}
+					}
+					
 				}
-			}
-			/*
-			while(socket.isConnected()) {
-				System.out.println("CLIENT WAITING FOR LINE");
-				byte[] store = in.readAllBytes();
-				System.out.println(store);
-				if( in.available() <= 0) continue;
-				String line = ServerMisc.getString(in);
-				if(line!=null)
-					if(line.length() > 0) {
-						System.out.println( line );
-					}
-			}
-			//*/
+			}while(true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		System.out.println("CONNECTION LOST");
 	}
 	public void sendString(String str) {
-		ServerMisc.sendString(out, str);
+		try {
+			ServerMisc.sendString(out, str);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

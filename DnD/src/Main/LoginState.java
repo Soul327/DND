@@ -4,7 +4,6 @@ import java.awt.Color;
 
 import Misc.Graphics;
 import Misc.KeyManager;
-import Misc.ServerMisc;
 
 public class LoginState {
 	int selected = 0;
@@ -39,7 +38,8 @@ public class LoginState {
 				case 0: userName += str; break;
 				case 1: password += str; break;
 			}
-			
+		Main.client.sendString("AUTHENTICATE(root,password);");
+		Main.window.stateManager.state = 1;
 	}
 	public void render(Graphics g) {
 		g.setColor(Color.gray);

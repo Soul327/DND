@@ -1,5 +1,6 @@
 package Main;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,7 +11,10 @@ import java.util.ArrayList;
 import Misc.ServerMisc;
 
 public class Server extends Thread {
+	
 	public static ArrayList<User> users = new ArrayList<User>();
+	public static ArrayList<Stick> sticks = new ArrayList<Stick>();
+	
 	public Server() {
 		User usr = new User();
 		usr.userName = "root";
@@ -67,37 +71,35 @@ class Handler extends Thread {
 					if(sus) System.out.println("USER LOG");
 					else System.out.println("FAILED");
 				}
+				if(line.startsWith("UPDATEFILES")) {
+					updateClientFiles(out);
+				}
+				if(line.startsWith("SENDING FILE")) {
+					ServerMisc.sendString(out, "PONG");
+					ServerMisc.getFile(in);
+				}
+				
 				
 				if(outputString.length() == 0) outputString = "PONG";
 				ServerMisc.sendString(out, outputString);
 			}
-			/*
-			while(socket.isConnected()) {
-				String line = ServerMisc.getString(in);
-				if(line!=null)
-					if(line.length() > 0) {
-						System.out.println( line );
-						if(line.startsWith("AUTHENTICATE")) {
-							String userName = line.substring(13, line.indexOf(","));
-							String password = line.substring(line.indexOf(",")+1, line.indexOf(")"));
-							System.out.println("User login. USERNAME:"+userName + " PASSWORD:"+password);
-							for(User u:Server.users)
-								if(u.userName == userName && u.password == password) {
-									user = u;
-									System.out.println("User loged in as "+userName);
-									ServerMisc.sendString(out, "CLIENTUSER");
-									System.out.println("SENT LINE");
-									break;
-								}
-						}
-					}
-			}
-			//*/
 			
 			in.close();
 			out.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		System.out.println("Client Disconnected");
+	}
+	public void updateClientFiles(OutputStream out) {
+		File[] files = new File("server").listFiles();
+		try {
+			for(File f:files) {
+				ServerMisc.sendString(out, "SENDING FILE");
+				ServerMisc.sendFile(out, f, "client\\");
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	}
 }
