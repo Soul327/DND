@@ -29,7 +29,7 @@ public class Server extends Thread {
 
 			while (true) {
 				Socket sock = ss.accept();
-				System.out.println("Connected");
+//				System.out.println("Connected");
 				new Handler(sock).start();
 			}
 
@@ -53,9 +53,9 @@ class Handler extends Thread {
 			while(socket.isConnected()) {
 				String outputString = "";
 				
-				System.out.println("SERVER WAITING");
+				//System.out.println("SERVER WAITING");
 				String line = ServerMisc.getString(in);
-				System.out.println( "SERVER RECEIVED:"+line );
+				//System.out.println( "SERVER RECEIVED:"+line );
 				if(line.startsWith("AUTHENTICATE")) {
 					boolean sus = false;
 					String userName = line.substring(13, line.indexOf(","));
@@ -68,11 +68,10 @@ class Handler extends Thread {
 							sus = true;
 							break;
 						}
-					if(sus) System.out.println("USER LOG");
-					else System.out.println("FAILED");
+//					if(sus) System.out.println("USER LOG"); else System.out.println("FAILED");
 				}
 				if(line.startsWith("UPDATEFILES")) {
-					updateClientFiles(out);
+					updateClientFiles(out,in);
 				}
 				if(line.startsWith("SENDING FILE")) {
 					ServerMisc.sendString(out, "PONG");
@@ -91,12 +90,13 @@ class Handler extends Thread {
 		}
 		System.out.println("Client Disconnected");
 	}
-	public void updateClientFiles(OutputStream out) {
+	public void updateClientFiles(OutputStream out, InputStream in) {
 		File[] files = new File("server").listFiles();
 		try {
 			for(File f:files) {
 				ServerMisc.sendString(out, "SENDING FILE");
 				ServerMisc.sendFile(out, f, "client\\");
+				ServerMisc.getString(in);
 			}
 		} catch (IOException e1) {
 			e1.printStackTrace();

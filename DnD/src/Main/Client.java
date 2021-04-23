@@ -1,5 +1,6 @@
 package Main;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,6 +11,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import FileUtil.FileUtil;
 import Misc.ServerMisc;
 
 public class Client extends Thread {
@@ -19,9 +21,13 @@ public class Client extends Thread {
 	String ip = "127.0.0.1";
 	boolean cycle = false;
 	
-	public Client() {}
+	public Client() {
+		File file = new File("client");
+		if(file.exists())
+			FileUtil.delete(file);
+	}
 	public void connect() {
-		System.out.println("Connecting to "+ip);
+//		System.out.println("Connecting to "+ip);
 		try {
 			socket = new Socket(ip, Main.port);
 			in = socket.getInputStream();
@@ -43,12 +49,12 @@ public class Client extends Thread {
 				connect();
 //				ServerMisc.getString(in);
 				while(socket.isConnected()) {
-					System.out.println("CLIENT WAITING");
+					//System.out.println("CLIENT WAITING");
 					String line = ServerMisc.getString(in);
-					System.out.println( "CLIENT RECEIVED:"+line );
+//					System.out.println( "CLIENT RECEIVED:"+line );
 					if(line.startsWith("SENDING FILE")) {
-						ServerMisc.sendString(out, "PING");
 						ServerMisc.getFile(in);
+						ServerMisc.sendString(out, "FIN");
 					}
 					if(line.startsWith("LOGIN ACCEPTED")) {
 						Main.window.stateManager.state = 1;
@@ -63,6 +69,7 @@ public class Client extends Thread {
 							Main.window.frame.validate();
 							Main.window.frame.repaint();
 						}
+						sendString("UPDATEFILES");
 					}
 					
 				}

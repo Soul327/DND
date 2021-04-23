@@ -31,7 +31,7 @@ public class Window extends Thread implements ActionListener {
 	public boolean unfocusedRendering = true, unfocusedUpdating = true;
 	public boolean alwaysUpdate = true;
 	public int update = 120;
-	public int width = 500, height = 500, devMode = 0, maxFPS = 120;
+	public int width = 500, height = 500, devMode = 1, maxFPS = 120;
 	public double fps = 0;
 	public ArrayList<String> debugMessages = new ArrayList<String>();
 
