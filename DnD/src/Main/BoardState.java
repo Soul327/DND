@@ -18,6 +18,7 @@ public class BoardState {
 	ArrayList<Stick> sticks = new ArrayList<Stick>();
 	double globalZoom = 1;
 	double tileSize = 0;
+	double offX = 0, offY = 0;
 	
 	public BoardState() {
 		Stick stick = new Stick();
@@ -47,17 +48,23 @@ public class BoardState {
 		} catch (IOException e) {  }
 	}
 	public void tick() {
-		if(Math.random()*100<1) reload();
+//		if(Math.random()*100<1) reload();
 		if(KeyManager.keyRelease(KeyEvent.VK_1)) tileSize += 1;
 		if(KeyManager.keyRelease(KeyEvent.VK_2)) tileSize -= 1;
 		if(KeyManager.keyRelease(KeyEvent.VK_F5)) reload();
+		
+		if(KeyManager.getKey(KeyEvent.VK_W)) offY -= 1;
+		if(KeyManager.getKey(KeyEvent.VK_A)) offX -= 1;
+		if(KeyManager.getKey(KeyEvent.VK_S)) offY += 1;
+		if(KeyManager.getKey(KeyEvent.VK_D)) offX += 1;
 	}
 	public void render(Graphics g) {
-		g.drawImage(imgMap);//Background
+		if(imgMap != null)
+			g.drawImage(imgMap,offX,offY,imgMap.getWidth(),imgMap.getHeight());//Background
 		if(imgMap!=null) {
 			g.setColor(Color.gray);
 			for(int x=0;x*tileSize<imgMap.getWidth();x++)
-				g.drawLine(0, x*tileSize, imgMap.getWidth(), x*tileSize);
+				g.drawLine(offX, x*tileSize+offY, imgMap.getWidth()+offX, x*tileSize+offY);
 			for(int x=0;x*tileSize<imgMap.getHeight();x++)
 				g.drawLine(x*tileSize, 0, x*tileSize, imgMap.getHeight());
 		}
@@ -72,5 +79,6 @@ public class BoardState {
 				s.size*tileSize );
 		}
 		g.drawString("TILE SIZE:"+tileSize, 0, 15);
+		g.drawString("offX:"+offX+" offY:"+offY, 0, 30);
 	}
 }
