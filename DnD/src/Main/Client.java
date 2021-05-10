@@ -20,6 +20,7 @@ public class Client extends Thread {
 	OutputStream out;
 	String ip = "127.0.0.1";
 	boolean cycle = false;
+	String usrA = "";
 	
 	public Client() {
 		File file = new File("client");
@@ -58,17 +59,18 @@ public class Client extends Thread {
 					}
 					if(line.startsWith("LOGIN ACCEPTED")) {
 						Main.window.stateManager.state = 1;
-						String per = line.substring(15);
-						if(per.charAt(1) == '1') {
+						usrA = line.substring(15);
+						if(usrA.charAt(0) == '1') {
 							Main.window.masterMenu.setVisible(true);
 							Main.window.frame.validate();
 							Main.window.frame.repaint();
 						}
-						if(per.charAt(1) == '1') {
+						if(usrA.charAt(1) == '1') {
 							Main.window.serverMenu.setVisible(true);
 							Main.window.frame.validate();
 							Main.window.frame.repaint();
 						}
+						
 						sendString("UPDATEFILES");
 					}
 					

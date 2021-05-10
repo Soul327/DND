@@ -47,7 +47,6 @@ public class Window extends Thread implements ActionListener {
 	public JMenuItem[] menuItems = new JMenuItem[10];
 
 	StateManager stateManager = new StateManager();
-	static ShowingSizeCardLayout layout = new ShowingSizeCardLayout();
 
 	public Window() {
 		fps = maxFPS;
@@ -71,7 +70,6 @@ public class Window extends Thread implements ActionListener {
 		frame.addMouseListener(mouseManager);
 		frame.addMouseMotionListener(mouseManager);
 		frame.addMouseWheelListener(mouseManager);
-		frame.setLayout(layout);
 
 		mb = new JMenuBar();
 		fileMenu = new JMenu("File");

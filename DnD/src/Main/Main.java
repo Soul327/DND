@@ -7,14 +7,16 @@ public class Main {
 	
 	public static int port = 3434;
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws InterruptedException {
 		new Main();
 	}
 
-	public Main() {
+	public Main() throws InterruptedException {
 		server = new Server();
 		client = new Client();
-		server.start(); client.start();
+		server.start();
+		Thread.sleep(100);
+		client.start();
 
 		window= new Window();
 		window.start();

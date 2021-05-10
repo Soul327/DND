@@ -1,7 +1,16 @@
 package Main;
 
 public class Stick {
+	int id = 0;
 	double x = 0, y = 0, size = 1;
+	
+	public Stick() {}
+	
+	
+	public Stick(String str) {
+		setString(str);
+	}
+	
 	String getString() {
 		String str = "STICK ";
 		String[] list = {
@@ -13,6 +22,7 @@ public class Stick {
 		System.out.println(str);
 		return str;
 	}
+	
 	void setString(String str) {
 		if(str.startsWith("STICK "))
 			str = str.substring( "STICK ".length() );
