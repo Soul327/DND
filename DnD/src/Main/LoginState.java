@@ -2,8 +2,8 @@ package Main;
 
 import java.awt.Color;
 
-import Misc.Graphics;
 import Misc.KeyManager;
+import Rendering.Graphics;
 
 public class LoginState {
 	int selected = 0;

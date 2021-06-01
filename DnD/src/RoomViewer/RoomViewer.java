@@ -1,4 +1,4 @@
-package Main;
+package RoomViewer;
 
 import java.awt.Canvas;
 import java.awt.Color;
@@ -6,27 +6,17 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 
+import RoomViewer.StateManager;
 import Misc.KeyManager;
 import Misc.MouseManager;
-import Misc.ServerMisc;
-import FileUtil.FileUtil;
 
-public class Window extends Thread implements ActionListener {
+public class RoomViewer extends Thread {
 	boolean running = true;
 	public boolean unfocusedRendering = true, unfocusedUpdating = true;
 	public boolean alwaysUpdate = true;
@@ -36,19 +26,18 @@ public class Window extends Thread implements ActionListener {
 	public ArrayList<String> debugMessages = new ArrayList<String>();
 
 	public JFrame frame;
-	public JMenuBar mb;
-	public JMenu fileMenu, serverMenu, masterMenu, miscMenu;
 	private Canvas canvas;
 	public KeyManager keyManager;
 	public MouseManager mouseManager;
 	public Thread load;
 	public String name = "MISSING WINDOW NAME";
-
-	public JMenuItem[] menuItems = new JMenuItem[10];
-
 	StateManager stateManager = new StateManager();
 
-	public Window() {
+	public static void main(String args[]) {
+		new RoomViewer().start();
+	}
+	
+	public RoomViewer() {
 		fps = maxFPS;
 		keyManager = new KeyManager();
 		mouseManager = new MouseManager();
@@ -71,35 +60,6 @@ public class Window extends Thread implements ActionListener {
 		frame.addMouseMotionListener(mouseManager);
 		frame.addMouseWheelListener(mouseManager);
 
-		mb = new JMenuBar();
-		fileMenu = new JMenu("File");
-
-		int z = 0;
-		z = 0; menuItems[z] = new JMenuItem("New"); fileMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		z = 1; menuItems[z] = new JMenuItem("Open"); fileMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		z = 2; menuItems[z] = new JMenuItem("Save"); fileMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		z = 3; menuItems[z] = new JMenuItem("Exit"); fileMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		mb.add(fileMenu);
-
-		serverMenu = new JMenu("Server");
-		z = 4; menuItems[z] = new JMenuItem("Shutdown"); serverMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		serverMenu.setVisible(false);
-		mb.add(serverMenu);
-
-		masterMenu = new JMenu("DM Tools");
-		z = 5; menuItems[z] = new JMenuItem("Add Stick"); masterMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		z = 6; menuItems[z] = new JMenuItem("Set Background"); masterMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		masterMenu.setVisible(false);
-		mb.add(masterMenu);
-
-		miscMenu = new JMenu("Settings");
-		z = 7; menuItems[z] = new JMenuItem("Set Address"); miscMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		z = 8; menuItems[z] = new JMenuItem("Update"); miscMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		z = 9; menuItems[z] = new JMenuItem("Delete Local Files"); miscMenu.add(menuItems[z]); menuItems[z].addActionListener(this);
-		mb.add(miscMenu);
-
-		frame.setJMenuBar(mb);
-
 		canvas = new Canvas();
 		canvas.setPreferredSize(new Dimension(width, height));
 		canvas.setMaximumSize(new Dimension(width, height));
@@ -119,47 +79,6 @@ public class Window extends Thread implements ActionListener {
 		height = canvas.getHeight();
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		// File > Exit
-		if (e.getSource() == menuItems[3])
-			System.exit(0);
-		// Server > Shutdown
-		if (e.getSource() == menuItems[4])
-			Main.client.sendString("SHUTDOWN");
-		// DM Tools > setBackground
-		if (e.getSource() == menuItems[6]) {
-			JFileChooser chooser = new JFileChooser();
-			if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-				File selectedFile = chooser.getSelectedFile();
-				Main.client.sendString("SENDING FILE");
-				try {
-					ServerMisc.sendFile(Main.client.out, selectedFile, "server\\");
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
-		}
-		// Settings > Set Address
-		if (e.getSource() == menuItems[7]) {
-			Main.client.ip = JOptionPane.showInputDialog("Enter an ip address.");
-			try {
-				Main.client.socket.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
-		// Settings > Update
-		if (e.getSource() == menuItems[8]) {
-			Main.client.sendString("UPDATEFILES");
-		}
-		// Settings > Delete Local Files
-		if (e.getSource() == menuItems[9]) {
-			File file = new File("client");
-			if(file.exists())
-				FileUtil.delete(file);
-		}
-	}
-
 	private void tick() {
 		long startTime = System.nanoTime();
 		width = canvas.getWidth();
@@ -170,7 +89,9 @@ public class Window extends Thread implements ActionListener {
 			devMode++;
 		if (KeyManager.keyRelease(KeyEvent.VK_MINUS) & devMode > 0)
 			devMode--;
+		
 		stateManager.tick();
+		
 		tickTime = System.nanoTime() - startTime;
 	}
 
@@ -198,9 +119,9 @@ public class Window extends Thread implements ActionListener {
 
 		Rendering.Graphics gg = new Rendering.Graphics((Graphics2D) g);
 		gg.setDim(width, height);
-
+		
 		stateManager.render(gg);
-
+		
 		// Drawing fps
 
 		if (devMode > 0) {

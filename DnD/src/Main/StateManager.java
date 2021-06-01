@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import Misc.Graphics;
+import Rendering.Graphics;
 
 public class StateManager {
 	public int state = 0;

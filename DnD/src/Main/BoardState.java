@@ -10,10 +10,10 @@ import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
-import Misc.Graphics;
 import Misc.KeyManager;
 import Misc.Mat;
 import Misc.MouseManager;
+import Rendering.Graphics;
 
 public class BoardState {
 	boolean showGrid = false;
